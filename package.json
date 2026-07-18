@@ -1,0 +1,26 @@
+{
+  "name": "product-demo-creator",
+  "version": "1.0.0",
+  "description": "Turn any live web app into a narrated, captioned demo video — Playwright drives + records, offline TTS narrates, ffmpeg muxes. No screen recording, no mic, no paid services.",
+  "type": "module",
+  "bin": {
+    "demo-maker": "bin/demo-maker.js"
+  },
+  "scripts": {
+    "demo": "node bin/demo-maker.js scenes/vg800.js",
+    "probe": "node bin/demo-maker.js --probe scenes/vg800.js",
+    "setup:ffmpeg": "node scripts/fetch-ffmpeg.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fxcircus/product-demo-creator.git"
+  },
+  "author": "fxcircus",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "playwright": "^1.49.0"
+  }
+}
