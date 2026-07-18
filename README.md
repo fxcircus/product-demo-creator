@@ -52,7 +52,18 @@ file:
   **automatic fallback** — if `edgeTts` can't reach the network, the demo still
   renders (just robotic), and the run logs a warning.
 
-Pick a voice in the scenes file:
+See the curated voices, or every available one:
+
+```bash
+node bin/demo-maker.js --list-voices          # hand-picked shortlist
+node bin/demo-maker.js --list-voices --all    # every Edge voice (hundreds)
+```
+
+Pick one per demo — in the scenes file, or as a run-time override (no edit):
+
+```bash
+node bin/demo-maker.js --voice en-US-GuyNeural scenes/myapp.js
+```
 
 ```js
 voice: { provider: 'edgeTts', voice: 'en-US-AndrewNeural', rate: '+8%' }
@@ -62,8 +73,13 @@ voice: { provider: 'edgeTts', voice: 'en-US-AndrewNeural', rate: '+8%' }
 ```
 
 `edgeTts` rate is an SSML string (`'+8%'`); `say` rate is words-per-minute.
-List every Edge voice with `node -e "import('msedge-tts').then(m=>new
-m.MsEdgeTTS().getVoices().then(v=>console.log(v.map(x=>x.ShortName).join('\n'))))"`.
+
+**For the most natural result, write the *spoken* text for the ear.** The
+`voiceover` field is separate from the on-screen `caption`/title — so respell
+tricky names in speech while keeping them correct on screen. A hyphen makes the
+voice pause ("VG-800" → "VG … 800"), so the example says "VG800" in narration
+but shows "VG-800". Same for symbols/units ("1920×1080" → "nineteen-twenty by
+ten-eighty").
 
 ## Demo your own product
 

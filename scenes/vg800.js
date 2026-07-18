@@ -39,7 +39,8 @@ export default {
   //   edgeTts — MS Edge free neural voices (natural; needs network, no key).
   //             `rate` is an SSML string like '+8%'. Voices: en-US-AndrewNeural
   //             (warm), -GuyNeural / -BrianNeural (confident), -AvaNeural /
-  //             -EmmaNeural (female). Full list: msedge-tts getVoices().
+  //             -EmmaNeural (female). See all: `--list-voices [--all]`, or
+  //             override without editing this file: `--voice <id> scenes/…`.
   //   say     — macOS built-in (offline, robotic). `voice: 'Ava'`, `rate: 185`
   //             (words/min). Used automatically if edgeTts can't reach the net.
   voice: { provider: 'edgeTts', voice: 'en-US-AndrewNeural', rate: '+8%' },
@@ -55,7 +56,10 @@ export default {
     // The card shows for ~3s, then fades out so the product is on screen
     // fast — the rest of the intro line narrates over the revealed app.
     {
-      voiceover: 'VG-800 MIDI Control. Retune your guitar digitally using the Boss VG-800 and its divided pickup system, straight from the browser over MIDI.',
+      // Spoken text spells the pedal "VG800" (no hyphen) so the neural voice
+      // says it as one smooth "vee-gee-eight-hundred" — a hyphen makes it
+      // pause. The on-screen card below keeps the real name, "VG-800".
+      voiceover: 'VG800 MIDI Control. Retune your guitar digitally using the Boss VG800 and its divided pickup system, straight from the browser over MIDI.',
       caption: null, // the card itself is the text
       actions: [
         { showCard: { title: 'VG-800 MIDI Control', subtitle: 'Retune your guitar over MIDI — right from the browser' } },
@@ -77,8 +81,10 @@ export default {
     // Nav tab scrolls to the Open Majors section, then tap the card. Linger
     // so the readout animates each string to pitch.
     {
-      voiceover: 'Tap a tuning, and all six strings retune at once — like Open G Dobro.',
-      caption: 'One tap — all six strings retune: Open G Dobro',
+      // Narration/caption say "Open G"; the click target keeps the card's full
+      // name "Open G Dobro" (the app has both "Open G Dobro" and "Open G low").
+      voiceover: 'Tap a tuning, and all six strings retune at once — like Open G.',
+      caption: 'One tap — all six strings retune: Open G',
       actions: [
         { click: 'Open Majors' },
         { wait: 1200 },

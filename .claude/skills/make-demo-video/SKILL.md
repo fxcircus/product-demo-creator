@@ -6,9 +6,31 @@ description: Create or fix a narrated demo video of a live web app using this re
 # Making a demo video with demo-maker
 
 The pipeline is `node bin/demo-maker.js scenes/<app>.js`: it synthesizes
-narration with `say`, drives the app's URL in headless Playwright Chromium
-(recordVideo), and muxes audio + encodes with the vendored ffmpeg. The only
-file that changes per app is the scenes file. Follow this exact loop:
+narration (natural neural voice by default), drives the app's URL in headless
+Playwright Chromium (recordVideo), and muxes audio + encodes with the vendored
+ffmpeg. The only file that changes per app is the scenes file. The goal is the
+**most natural-sounding result possible** — that means the right voice AND
+scripts written so the voice reads them cleanly. Follow this loop:
+
+## 0. Ask which voice — before writing narration
+
+Voice is a taste call, so ask the user up front with **AskUserQuestion** rather
+than assuming. List the curated options first:
+
+```bash
+node bin/demo-maker.js --list-voices        # curated shortlist (+ --all for every voice)
+```
+
+Offer 3–4 from the shortlist as options (Andrew = warm default, Guy/Brian =
+confident announcer, Ava/Emma = female), and mention they can name any Edge
+voice. If they're unsure, **generate a few one-line samples so they can hear
+them** before committing (one short MsEdgeTTS call per voice → an mp3; send the
+files). Set the pick in the scenes file's `voice:` or pass `--voice <id>` at
+run time — no file edit needed:
+
+```bash
+node bin/demo-maker.js --voice en-US-GuyNeural scenes/<app>.js
+```
 
 ## 1. Probe before writing a single beat
 
@@ -32,6 +54,37 @@ node bin/demo-maker.js --probe scenes/<app>.js
   explicit click to restore state.
 - Beats hold as long as their narration automatically; add `minHold` only for
   animations that outlast the line, and `{ wait }` between clicks in a beat.
+
+## 2b. Write narration the neural voice reads cleanly
+
+The `voiceover` field is **spoken text**, separate from `caption` and title
+cards (**shown text**). Exploit that: spell things for the ear in `voiceover`
+while keeping the correct name on screen. Rules for natural output:
+
+- **Hyphenated names pause.** "VG-800" is read "VG … 800" with a gap. Respell
+  the *spoken* line "VG800" (glued) or "VG eight hundred"; keep "VG-800" in the
+  caption/card. (Real case — this is exactly why the example demo does it.)
+- **Acronyms / model numbers:** decide per term whether it should be said as
+  letters ("MIDI" → "middy" reads fine; "MA28" may need "M-A-28") or words.
+  When unsure how the *user* wants a term pronounced, don't guess.
+- **Symbols & units:** "1920×1080" → "nineteen-twenty by ten-eighty";
+  "$5/mo" → "five dollars a month"; "&" → "and"; "/" → "or". The engine reads
+  literal symbols unpredictably.
+- **Punctuation is pacing.** Commas and em-dashes add natural micro-pauses;
+  use them instead of cramming clauses together. A period between two ideas
+  reads better than a comma.
+
+### Proactively flag mispronunciation risks with AskUserQuestion
+
+Before rendering, scan every `voiceover` line for terms likely to mis-say:
+brand/model names, hyphenated or alphanumeric tokens, initialisms, unusual
+proper nouns, symbols, numbers with units. For each risky term, **ask the user
+how they want it pronounced** (AskUserQuestion) rather than guessing — e.g.
+"'VG-800' — say it as one word 'VG800', spell it 'V-G-800', or 'vee-gee eight
+hundred'?" Batch these into one question with a few options each. When a term
+is genuinely ambiguous and you can't preview it confidently, **generate quick
+TTS samples of the candidates and let the user pick by ear.** Getting these
+right up front is the difference between "robotic" and "natural."
 
 ## 3. Run and iterate on the summary
 
