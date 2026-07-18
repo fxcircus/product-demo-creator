@@ -44,21 +44,25 @@ export default {
   defaults: { minHold: 3.0, tailPad: 0.9 }, // tailPad: silence after each VO line
 
   beats: [
-    // 1 ── intro title card ──────────────────────────────────────────────────
+    // 1 ── intro title card (short!) ─────────────────────────────────────────
+    // The card shows for ~3s, then fades out so the product is on screen
+    // fast — the rest of the intro line narrates over the revealed app.
     {
       voiceover: 'VG-800 MIDI Control. Retune your guitar digitally using the Boss VG-800 and its divided pickup system, straight from the browser over MIDI.',
       caption: null, // the card itself is the text
       actions: [
         { showCard: { title: 'VG-800 MIDI Control', subtitle: 'Retune your guitar over MIDI — right from the browser' } },
+        { wait: 3000 },
+        { hideCard: true },
       ],
       minHold: 3.6,
     },
 
-    // 2 ── reveal the app, let the default view settle (Basic tunings) ───────
+    // 2 ── let the default view settle (Basic tunings) ───────────────────────
     {
       voiceover: 'Every alternate tuning, one click away.',
       caption: 'Every alternate tuning, one click away',
-      actions: [{ hideCard: true }],
+      actions: [],
       minHold: 3.2,
     },
 
