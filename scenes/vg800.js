@@ -35,7 +35,14 @@ export default {
   output: 'output/vg800-demo.mp4',
 
   video: { width: 1920, height: 1080, fps: 30 }, // 1920 wide = the app's widest layout
-  voice: { voice: null, rate: 185 },  // null = system default voice; `say -v ?` lists others
+  // Narration voice. Two providers:
+  //   edgeTts — MS Edge free neural voices (natural; needs network, no key).
+  //             `rate` is an SSML string like '+8%'. Voices: en-US-AndrewNeural
+  //             (warm), -GuyNeural / -BrianNeural (confident), -AvaNeural /
+  //             -EmmaNeural (female). Full list: msedge-tts getVoices().
+  //   say     — macOS built-in (offline, robotic). `voice: 'Ava'`, `rate: 185`
+  //             (words/min). Used automatically if edgeTts can't reach the net.
+  voice: { provider: 'edgeTts', voice: 'en-US-AndrewNeural', rate: '+8%' },
   // Pre-grant so no permission prompt appears on camera. NOTE: do NOT add
   // 'midi-sysex' here — granting it crashes headless Chromium's renderer.
   permissions: ['midi'],

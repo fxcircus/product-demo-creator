@@ -60,8 +60,9 @@ with `silencedetect` — speech onsets should sit ~0.25s after each beat start.
   visible matches count, smallest visible match wins.
 - Hover tooltips linger where the real mouse rests; the resolver parks the
   mouse at (2,2) after each click. Don't remove that.
-- Playwright video is silent by design → narration must be offline TTS muxed
-  at recorded beat timestamps. Expect ±1s wall-clock drift; the muxer
-  rescales automatically.
+- Playwright video is silent by design → narration is synthesized separately
+  and muxed at recorded beat timestamps. Default provider is `edgeTts` (free MS
+  Edge neural voices, needs network); `say` is the offline fallback. Expect ±1s
+  wall-clock drift; the muxer rescales automatically.
 - ffmpeg/ffprobe are vendored in `vendor/` (this machine has no Homebrew);
   refetch with `npm run setup:ffmpeg`.

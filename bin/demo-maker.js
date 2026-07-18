@@ -43,7 +43,7 @@ const ffmpeg = findBinary('ffmpeg');
 const ffprobe = findBinary('ffprobe');
 
 // 1. narration first — beat holds depend on each line's spoken duration
-log.step('● narrating beats with macOS `say`…');
+log.step('● narrating beats…');
 const narrations = await narrateBeats(scenes.beats, scenes.voice, buildDir, ffprobe);
 
 // 2. drive the app + record video

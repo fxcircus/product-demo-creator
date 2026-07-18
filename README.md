@@ -3,7 +3,8 @@
 Turn any live web app into a **narrated, captioned demo video** — no screen
 recording, no microphone, no paid services, no API keys. You describe the demo
 in one small "scenes" file (a URL plus an ordered list of beats); the tool
-clicks through your app, records it, narrates it, and hands you an MP4.
+clicks through your app, records it, narrates it with a natural neural voice,
+and hands you an MP4.
 
 It never modifies the target app — it drives the public URL from the outside,
 like a user would.
@@ -13,7 +14,7 @@ demo this tool produced from a live guitar-tuning web app — the exact output o
 `npm run demo`.
 
 ```
-scenes/myapp.js  ──▶  🗣 offline TTS per line  ──▶  🎬 Playwright records the
+scenes/myapp.js  ──▶  🗣 neural TTS per line  ──▶  🎬 Playwright records the
 (URL + beats)         (duration sets pacing)        clicks at 1920×1080, with
                                                     captions, title cards and a
                                                     demo cursor drawn on top
@@ -35,10 +36,34 @@ npm run demo              # builds the example demo (a live guitar-tuning app)
 open output/vg800-demo.mp4
 ```
 
-Narration uses macOS's built-in `say` (Playwright video is silent by design,
-so speech is synthesized offline and muxed in afterwards). On Linux, swap the
-`say` call in `lib/narrate.js` for `espeak`/`piper` — everything else is
-cross-platform.
+## Narration
+
+Playwright's video is silent by design, so speech is synthesized per line and
+muxed in afterwards. Two providers, chosen by `voice.provider` in the scenes
+file:
+
+- **`edgeTts` (default)** — Microsoft Edge's neural voices via `msedge-tts`.
+  Natural-sounding, and **free: no API key, no account, no bill.** It reaches
+  the same public endpoint Edge's "Read Aloud" uses, so it needs an internet
+  connection. It's an *unofficial* endpoint — fine for personal/hobby demos;
+  for **monetized commercial** use, prefer a licensed path (Azure Speech has
+  the identical voices, or Kokoro is offline + Apache-2.0).
+- **`say`** — macOS's built-in voice: offline and robotic. It's also the
+  **automatic fallback** — if `edgeTts` can't reach the network, the demo still
+  renders (just robotic), and the run logs a warning.
+
+Pick a voice in the scenes file:
+
+```js
+voice: { provider: 'edgeTts', voice: 'en-US-AndrewNeural', rate: '+8%' }
+// confident/announcer: en-US-GuyNeural, en-US-BrianNeural
+// female:              en-US-AvaNeural, en-US-EmmaNeural
+// offline fallback:    { provider: 'say', voice: 'Ava', rate: 185 }
+```
+
+`edgeTts` rate is an SSML string (`'+8%'`); `say` rate is words-per-minute.
+List every Edge voice with `node -e "import('msedge-tts').then(m=>new
+m.MsEdgeTTS().getVoices().then(v=>console.log(v.map(x=>x.ShortName).join('\n'))))"`.
 
 ## Demo your own product
 
@@ -96,7 +121,7 @@ after the main page. A fake cursor glides to each target so viewers can follow.
 
 | Thing | Where |
 |---|---|
-| Voice / speaking rate | `voice: { voice: 'Samantha', rate: 175 }` — list voices with `say -v '?'` |
+| Voice / provider / rate | `voice: { provider: 'edgeTts', voice: 'en-US-AndrewNeural', rate: '+8%' }` — see [Narration](#narration) |
 | Resolution / fps | `video: { width: 1920, height: 1080, fps: 30 }` |
 | Pause after each line | `defaults: { tailPad: 0.9 }` |
 | Page-settle time before beat 1 | `settle: 2500` (ms) |
