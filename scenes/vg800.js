@@ -16,12 +16,18 @@
 //     { click: { selector: '#css' } }    CSS escape hatch (avoid when possible)
 //     { hold: "Label", ms: 1800 }        press-and-hold, then release
 //     { wait: 800 }                      pause (ms) between actions in a beat
+//     { press: 'Escape' }                keyboard key
 //     { showCard: { title, subtitle } }  full-screen title card overlay
 //     { hideCard: true }                 fade the card out
 //   minHold    optional: minimum seconds for the beat even if narration is short
 //
 // A click target that isn't found is logged, skipped, and listed in the final
 // summary — the recording never crashes.
+//
+// NOTE on this app at 1920px: the ☰ jump menu only exists below 1280px wide.
+// At recording width the same destinations are the nav tabs (Basic, Open
+// Majors, Ethnic, Chords, Lap Steel…), which smooth-scroll to each section —
+// so "open ☰ → X" is expressed here as a direct click on the X tab.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default {
@@ -40,15 +46,15 @@ export default {
   beats: [
     // 1 ── intro title card ──────────────────────────────────────────────────
     {
-      voiceover: 'VG-800 MIDI Control. Retune your Boss VG-800 from the browser.',
+      voiceover: 'VG-800 MIDI Control. Retune your guitar digitally using the Boss VG-800 and its divided pickup system, straight from the browser over MIDI.',
       caption: null, // the card itself is the text
       actions: [
-        { showCard: { title: 'VG-800 MIDI Control', subtitle: 'Retune your Boss VG-800 from the browser' } },
+        { showCard: { title: 'VG-800 MIDI Control', subtitle: 'Retune your guitar over MIDI — right from the browser' } },
       ],
       minHold: 3.6,
     },
 
-    // 2 ── reveal the app, let the default view settle ───────────────────────
+    // 2 ── reveal the app, let the default view settle (Basic tunings) ───────
     {
       voiceover: 'Every alternate tuning, one click away.',
       caption: 'Every alternate tuning, one click away',
@@ -56,62 +62,82 @@ export default {
       minHold: 3.2,
     },
 
-    // 3 ── DADGAD ────────────────────────────────────────────────────────────
+    // 3 ── Open Majors → Open G Dobro ────────────────────────────────────────
+    // Nav tab scrolls to the Open Majors section, then tap the card. Linger
+    // so the readout animates each string to pitch.
     {
-      voiceover: 'Tap a tuning, and all six strings retune at once. Here: DADGAD.',
-      caption: 'One tap — all six strings retune: DADGAD',
-      actions: [{ click: 'DADGAD' }],
-      minHold: 5.0, // linger so the pitch-neck readout animation plays out
+      voiceover: 'Tap a tuning, and all six strings retune at once — like Open G Dobro.',
+      caption: 'One tap — all six strings retune: Open G Dobro',
+      actions: [
+        { click: 'Open Majors' },
+        { wait: 1200 },
+        { click: 'Open G Dobro' },
+      ],
+      minHold: 6.5,
     },
 
-    // 4 ── Nashville ─────────────────────────────────────────────────────────
+    // 4 ── beyond guitar: Lap Steel (E7), then Ethnic (Mandolin) ─────────────
+    // "E7" also exists as a chord cell in the Chords grid — the resolver
+    // prefers the in-viewport match, so after scrolling to Lap Steel the E7
+    // card (under Dominant / 7th) wins. Linger on each instrument.
     {
-      voiceover: 'Dozens more, from open majors to Nashville high-strung.',
-      caption: 'Dozens of tunings — open majors to Nashville high-strung',
-      actions: [{ click: 'Nashville' }],
-      minHold: 4.5,
+      voiceover: "Go beyond guitar — there's lap steel, pedal steel, even ethnic instruments like mandolin and oud.",
+      caption: 'Lap steel, pedal steel & ethnic instruments',
+      actions: [
+        { click: 'Lap Steel' },
+        { wait: 1400 },
+        { click: 'E7' },
+        { wait: 2400 },
+        { click: 'Ethnic' },
+        { wait: 1400 },
+        { click: 'Mandolin' },
+      ],
+      minHold: 12.5,
     },
 
-    // 5 ── pedal-steel bend: press-and-hold the "Sixth" bender ───────────────
-    // The Bends rail is sticky top-left and visible from page load — there is
-    // no "Bends" opener to click. The card reads SIXTH (CSS uppercase).
-    // ORDER MATTERS: this beat must come BEFORE the Chords beat (chord mode
-    // swaps the rail to per-string scale bends) and while Nashville/Standard
-    // is active (DADGAD installs its own custom pedal, removing "Sixth").
+    // 5 ── pedal-steel bend: press-and-hold the "IV Chord" combo pad ─────────
+    // The Bends rail is sticky top-left (there is no "Bends" tab at 1920px).
+    // STATE MATTERS: under Mandolin the combo pads read "no root" and holding
+    // them bends nothing — so restore Standard first (verified empirically:
+    // the hold then visibly bends B→C / D→E on the readout).
     {
-      voiceover: 'Hold a bender, and the strings glide into pitch. Pedal-steel style.',
+      voiceover: 'Hold a bender and the strings glide into pitch — pedal-steel style.',
       caption: 'Benders glide strings into pitch — pedal-steel style',
       actions: [
-        { hold: 'Sixth', ms: 1800 }, // hold so it glides in, release to spring back
+        { click: 'Standard' }, // camera glides back to the top; pads regain roots
+        { wait: 900 },
+        { hold: 'IV Chord', ms: 1800 }, // glides in, springs back on release
       ],
-      minHold: 6.0,
+      minHold: 7.5,
     },
 
-    // 6 ── chords section: two diatonic cells ────────────────────────────────
-    // "Chords" is a nav tab that smooth-scrolls to the chord grid (~1.2s).
-    // Diatonic cells carry Roman-numeral badges: "IV" sits on the F cell and
-    // the dominant is labelled "V7" (on G7) — there is no bare "V" on screen.
+    // 6 ── chords section: the IV and V7 cells ───────────────────────────────
+    // "Chords" nav smooth-scrolls to the grid (~1.2s). The F cell carries the
+    // "IV" badge and the G7 cell (7 row) carries "V7" — the badges are the
+    // unambiguous click targets ("F"/"G7" as text collide with note letters
+    // and key caps all over the page), and they select exactly those cells.
     {
-      voiceover: 'Or play fully voiced chords, colour-coded by harmonic function.',
+      voiceover: 'Play fully voiced chords, colour-coded by harmonic function.',
       caption: 'Fully voiced chords, colour-coded by function',
       actions: [
         { click: 'Chords' },
         { wait: 1500 }, // let the smooth scroll land
-        { click: 'IV' },
+        { click: 'IV' },  // = the F cell
         { wait: 1100 },
-        { click: 'V7' },
+        { click: 'V7' },  // = the G7 cell
       ],
       minHold: 6.5,
     },
 
     // 7 ── guitar models: LP (electric), then swap to Acoustic for MA28 ──────
-    // The guitar rail is sticky top-right. MA28 lives under the "Acoustic"
-    // toggle (Electric 12 + Acoustic 9 = the 21 models).
+    // The guitar rail is sticky top-right. The app auto-flips to an acoustic
+    // model after chord beats, so come back to Electric first. MA28 lives
+    // under the "Acoustic" toggle (Electric 12 + Acoustic 9 = the 21 models).
     {
       voiceover: 'Switch between twenty-one guitar and acoustic models on the fly.',
       caption: '21 guitar & acoustic models',
       actions: [
-        { click: 'Electric' }, // the app auto-flips to Acoustic after chord beats — come back first
+        { click: 'Electric' },
         { wait: 1000 },
         { click: 'LP' },
         { wait: 1300 },
@@ -138,10 +164,10 @@ export default {
 
     // 9 ── outro card ────────────────────────────────────────────────────────
     {
-      voiceover: 'Free, open source, and running in your browser now.',
+      voiceover: 'Free and open source — download now, link in the caption.',
       caption: null,
       actions: [
-        { showCard: { title: 'Free & open source', subtitle: 'Running in your browser now' } },
+        { showCard: { title: 'Free & open source', subtitle: 'Download now — link in the caption' } },
       ],
       minHold: 4.0,
     },
