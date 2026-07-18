@@ -1,6 +1,7 @@
 node_modules/
 build/
 output/
+plans/
 vendor/ffmpeg
 vendor/ffprobe
 .claude/settings.local.json

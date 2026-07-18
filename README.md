@@ -8,6 +8,10 @@ clicks through your app, records it, narrates it, and hands you an MP4.
 It never modifies the target app — it drives the public URL from the outside,
 like a user would.
 
+**See it:** [`examples/vg800-demo.mp4`](examples/vg800-demo.mp4) is a finished
+demo this tool produced from a live guitar-tuning web app — the exact output of
+`npm run demo`.
+
 ```
 scenes/myapp.js  ──▶  🗣 offline TTS per line  ──▶  🎬 Playwright records the
 (URL + beats)         (duration sets pacing)        clicks at 1920×1080, with
