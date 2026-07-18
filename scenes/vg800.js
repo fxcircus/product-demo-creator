@@ -95,20 +95,31 @@ export default {
       minHold: 12.5,
     },
 
-    // 5 ── pedal-steel bend: press-and-hold the "IV Chord" combo pad ─────────
+    // 5 ── pedal-steel bend FROM E7: press-and-hold the "IV Chord" combo ─────
     // The Bends rail is sticky top-left (there is no "Bends" tab at 1920px).
-    // STATE MATTERS: under Mandolin the combo pads read "no root" and holding
-    // them bends nothing — so restore Standard first (verified empirically:
-    // the hold then visibly bends B→C / D→E on the readout).
+    // STATE MATTERS twice here:
+    //  • under Mandolin (end of beat 4) the combo pads read "no root" and
+    //    holding them bends nothing — so re-apply E7 first, where IV Chord
+    //    bends 2 B→C#, 3 G#→A, 6 B→C#;
+    //  • the "Lap Steel" nav click must come before the E7 click so the
+    //    lap-steel card is in the viewport — otherwise "E7" would resolve to
+    //    the off-screen E7 cell in the Chords grid.
     {
       voiceover: 'Hold a bender and the strings glide into pitch — pedal-steel style.',
       caption: 'Benders glide strings into pitch — pedal-steel style',
       actions: [
-        { click: 'Standard' }, // camera glides back to the top; pads regain roots
-        { wait: 900 },
+        { click: 'Lap Steel' },
+        { wait: 1800 }, // long smooth-scroll from Ethnic — let it land
+        // By now "E7" exists in THREE places: the lap-steel card, the E7 cell
+        // in the Chords grid, and a clipboard history chip logged in beat 4.
+        // Labels can't disambiguate that, so scope to the lap-steel
+        // "Dominant / 7th" family group — the one legitimate use of the CSS
+        // escape hatch.
+        { click: { selector: '#fam-dominant-7th .card:has(.card-name:text-is("E7"))' } },
+        { wait: 1000 },
         { hold: 'IV Chord', ms: 1800 }, // glides in, springs back on release
       ],
-      minHold: 7.5,
+      minHold: 9.5,
     },
 
     // 6 ── chords section: the IV and V7 cells ───────────────────────────────
